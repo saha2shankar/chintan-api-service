@@ -15,6 +15,8 @@ import com.chintan.entity.Category;
 import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.repository.CategoryRepository;
 import com.chintan.service.CategoryService;
+import com.chintan.util.Validation;
+import com.chintan.util.ValidationException;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -23,9 +25,14 @@ public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
 	private ModelMapper mapper;
+	
+	@Autowired
+	private Validation validation;
 
 	@Override
 	public Boolean saveCategory(CategoryDto categorydto) {
+		//Validation checking
+		validation.categoryValidation(categorydto);
 
 		Category category = mapper.map(categorydto, Category.class);
 		if (ObjectUtils.isEmpty(category.getId())) {
@@ -87,11 +94,10 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	@Override
-	public Boolean deleteCategory(Integer id) {
-		Optional<Category> findCategoryById = categoryRepository.findByIdAndIsDeletedFalse(id);
+	public Boolean deleteCategory(Integer id) throws Exception {
+		Category category = categoryRepository.findByIdAndIsDeletedFalse(id).orElseThrow(()-> new ResourcesNotFoundException("Category not found with id : "+ id)) ;
 
-		if (findCategoryById.isPresent()) {
-			Category category = findCategoryById.get();
+		if (ObjectUtils.isEmpty(category)) {
 			category.setIsDeleted(true);
 			categoryRepository.save(category);
 			return true;

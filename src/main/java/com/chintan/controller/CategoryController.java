@@ -20,25 +20,25 @@ import com.chintan.dto.CategoryResponse;
 import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.service.CategoryService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1/category")
 public class CategoryController {
 	@Autowired
 	private CategoryService categoryService;
 
-	@PostMapping("/save-category")
+	@PostMapping("/save-category") //@Valid
 	public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categorydto){
 		Boolean saveCategory = categoryService.saveCategory(categorydto);
 		if(saveCategory) {
-			return new ResponseEntity<>("saved", HttpStatus.CREATED);
-		}
-		return new ResponseEntity<>("not saved ", HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+			return new ResponseEntity<>("category saved success", HttpStatus.CREATED);
+		}else {
+		return new ResponseEntity<>("category not saved ", HttpStatus.INTERNAL_SERVER_ERROR);
+	}}
 	
 	@GetMapping("/categories")
 	public ResponseEntity<?> getAllCategory(){
-		String sn = null;
-		sn.toUpperCase();
 		List<CategoryDto> allCategory = categoryService.getAllCategory();
 		if(CollectionUtils.isEmpty(allCategory)) {
 			return ResponseEntity.noContent().build();
