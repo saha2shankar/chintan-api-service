@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chintan.dto.CategoryDto;
 import com.chintan.dto.CategoryResponse;
+import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.service.CategoryService;
 
 @RestController
@@ -36,6 +37,8 @@ public class CategoryController {
 	
 	@GetMapping("/categories")
 	public ResponseEntity<?> getAllCategory(){
+		String sn = null;
+		sn.toUpperCase();
 		List<CategoryDto> allCategory = categoryService.getAllCategory();
 		if(CollectionUtils.isEmpty(allCategory)) {
 			return ResponseEntity.noContent().build();
@@ -56,22 +59,45 @@ public class CategoryController {
 	
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getCategoryById(@PathVariable Integer id){
-		CategoryDto categoryById = categoryService.getCategoryById(id);
-		if(ObjectUtils.isEmpty(categoryById)) {
-			return new ResponseEntity<> ("Category not found by Id :" + id , HttpStatus.NOT_FOUND);
+	public ResponseEntity<?> getCategoryById(@PathVariable Integer id) throws Exception{
+		try {
+			CategoryDto categoryById = categoryService.getCategoryById(id);
+			if(ObjectUtils.isEmpty(categoryById)) {
+				return new ResponseEntity<> ("Category not found by Id : " + id , HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<> (categoryById , HttpStatus.OK);
+	
+			
+		} 
+		catch (ResourcesNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+
 		}
-		return new ResponseEntity<> (categoryById , HttpStatus.OK);
+		
+		catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		
 	}
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteCategory(@PathVariable Integer id){
+	public ResponseEntity<?> deleteCategory(@PathVariable Integer id) throws Exception{
 		
-		Boolean deleteCategory = categoryService.deleteCategory(id);
-		if(deleteCategory) {
-			return new ResponseEntity<> ("Category Deleted Success" + id , HttpStatus.OK);
+		try {
+			Boolean deleteCategory = categoryService.deleteCategory(id);
+			if(deleteCategory) {
+				return new ResponseEntity<> ("Category Deleted Success : " + id , HttpStatus.OK);
+			}
+			
+			return new ResponseEntity<> ("Categoty not deleted" , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<> ("Categoty not deleted" , HttpStatus.INTERNAL_SERVER_ERROR);
+			catch (ResourcesNotFoundException e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+
+			}
+			catch (Exception e) {
+				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		
 		
 	}
 }
