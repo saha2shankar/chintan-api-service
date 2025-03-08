@@ -12,11 +12,11 @@ import org.springframework.util.ObjectUtils;
 import com.chintan.dto.CategoryDto;
 import com.chintan.dto.CategoryResponse;
 import com.chintan.entity.Category;
+import com.chintan.exception.ExistDataException;
 import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.repository.CategoryRepository;
 import com.chintan.service.CategoryService;
 import com.chintan.util.Validation;
-import com.chintan.util.ValidationException;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -33,6 +33,12 @@ public class CategoryServiceImpl implements CategoryService {
 	public Boolean saveCategory(CategoryDto categorydto) {
 		//Validation checking
 		validation.categoryValidation(categorydto);
+		//check exist or not
+		Boolean exist = categoryRepository.existsByName(categorydto.getName().trim());
+		if(exist) {
+			//throw error
+			throw new ExistDataException("Category Already Exist");
+		}
 
 		Category category = mapper.map(categorydto, Category.class);
 		if (ObjectUtils.isEmpty(category.getId())) {
