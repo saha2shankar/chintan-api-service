@@ -37,8 +37,8 @@ public class CategoryServiceImpl implements CategoryService {
 		Category category = mapper.map(categorydto, Category.class);
 		if (ObjectUtils.isEmpty(category.getId())) {
 			category.setIsDeleted(false);
-			category.setCreatedBy(1);
-			category.setCreatedOn(new Date());
+		//	category.setCreatedBy(1);
+		//	category.setCreatedOn(new Date());
 		}else {
 			updateCategory(category);
 		}
@@ -60,8 +60,8 @@ public class CategoryServiceImpl implements CategoryService {
 			category.setCreatedBy(existcategory.getCreatedBy());
 			category.setCreatedOn(existcategory.getCreatedOn());
 			category.setIsDeleted(existcategory.getIsDeleted());
-			category.setUpdateBy(1);
-			category.setUpdateOn(new Date());
+			//category.setUpdateBy(1);
+			//category.setUpdateOn(new Date());
 		}
 	}
 
