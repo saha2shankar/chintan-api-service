@@ -1,6 +1,4 @@
 package com.chintan.serviceImpl;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,29 +84,28 @@ public class CategoryServiceImpl implements CategoryService {
 				.map(category -> mapper.map(category, CategoryResponse.class)).toList();
 		return categoryList;
 	}
-
+	
 	@Override
-	public CategoryDto getCategoryById(Integer id) throws  Exception{
-		Category  category = categoryRepository.findByIdAndIsDeletedFalse(id)
-				.orElseThrow(()-> new ResourcesNotFoundException("Category not found with id ="+id));
+	public CategoryDto getCategoryById(Integer id) throws Exception {
+	    // Fetch the category from the repository, throw an exception if not found
+	    Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
+	            .orElseThrow(() -> new ResourcesNotFoundException("Category not found with id = " + id));
 
-		if (ObjectUtils.isEmpty(category)) {
-			return mapper.map(category, CategoryDto.class);
-		}
-
-		return null;
+	    // Map the category entity to a CategoryDto and return it
+	    return mapper.map(category, CategoryDto.class);
 	}
 
 	@Override
 	public Boolean deleteCategory(Integer id) throws Exception {
-		Category category = categoryRepository.findByIdAndIsDeletedFalse(id).orElseThrow(()-> new ResourcesNotFoundException("Category not found with id : "+ id)) ;
+	    // Fetch the category from the repository, throw an exception if not found
+	    Category category = categoryRepository.findByIdAndIsDeletedFalse(id)
+	            .orElseThrow(() -> new ResourcesNotFoundException("Category not found with id: " + id));
 
-		if (ObjectUtils.isEmpty(category)) {
-			category.setIsDeleted(true);
-			categoryRepository.save(category);
-			return true;
-		}
+	    // Soft delete the category by setting isDeleted to true
+	    category.setIsDeleted(true);
+	    categoryRepository.save(category);
 
-		return false;
+	    // Return true to indicate successful deletion
+	    return true;
 	}
 }
