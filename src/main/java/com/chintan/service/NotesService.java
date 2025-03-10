@@ -6,7 +6,7 @@ import com.chintan.dto.NotesDto;
 
 public interface NotesService {
 	
-	public Boolean saveNote(NotesDto notesDto);
+	public Boolean saveNote(NotesDto notesDto) throws Exception;
 	public List<NotesDto> getAllNotes();
 
 }

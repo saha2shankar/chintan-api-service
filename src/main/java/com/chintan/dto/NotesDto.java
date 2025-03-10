@@ -2,7 +2,6 @@ package com.chintan.dto;
 
 import java.util.Date;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,5 +21,15 @@ public class NotesDto {
 	private Date createdOn;
 	private Integer updateBy;
 	private Date updateOn;
+	
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+	public static class CategoryDto{
+		private Integer id;
+		private String name;
+	}
 
 }

@@ -1,6 +1,9 @@
 package com.chintan.entity;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,6 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Notes  extends BaseModel{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
