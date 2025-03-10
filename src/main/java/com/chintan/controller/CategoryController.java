@@ -84,7 +84,7 @@ public class CategoryController {
 
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/delete-category/{id}")
 	public ResponseEntity<?> deleteCategory(@PathVariable Integer id) throws Exception {
 
 		try {
