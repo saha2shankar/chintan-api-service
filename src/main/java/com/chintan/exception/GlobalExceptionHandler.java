@@ -1,6 +1,7 @@
 package com.chintan.exception;
 
 import java.util.LinkedHashMap;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.chintan.util.CommonUtil;
 import com.chintan.util.ValidationException;
 
 @ControllerAdvice
@@ -19,17 +21,19 @@ public class GlobalExceptionHandler {
 
 	
 	  @ExceptionHandler(Exception.class) public ResponseEntity<?>
-	  handleException(Exception e){ return new
-	  ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR); }
+	  handleException(Exception e){ 
+		  return CommonUtil.createErrorResponseMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR); }
 	 
+		  
 	@ExceptionHandler(NullPointerException.class)
 	public ResponseEntity<?> handleNullPointerException(Exception e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(ResourcesNotFoundException.class)
 	public ResponseEntity<?> handleResourcesNotFound(Exception e) {
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+		return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.NOT_FOUND);
+
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -42,12 +46,19 @@ public class GlobalExceptionHandler {
 			error.put(field, msg);
 		});
 
-		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		return CommonUtil.createErrorResponse(error, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(ValidationException.class)
 	public ResponseEntity<?> handleValidationException(ValidationException e) {
-		return new ResponseEntity<>(e.getErrors(), HttpStatus.BAD_REQUEST);
+		return CommonUtil.createErrorResponse(e.getErrors(), HttpStatus.BAD_REQUEST);
+
+	}
+	
+	@ExceptionHandler(ExistDataException.class)
+	public ResponseEntity<?> handleExistDataException(ExistDataException e) {
+		return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.CONFLICT);
+
 	}
 
 
