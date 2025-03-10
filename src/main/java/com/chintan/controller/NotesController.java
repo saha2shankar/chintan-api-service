@@ -13,12 +13,6 @@ import com.chintan.service.NotesService;
 public class NotesController {
 	@Autowired
 	private NotesService notesService;
-	public ResponseEntity<?> saveNotes (@RequestMapping NotesDto notesDto){
-		
-		Boolean saveNote = notesService.saveNote(notesDto);
-		if(saveNote) {
-		
-		}
-	}
+	
 
 }

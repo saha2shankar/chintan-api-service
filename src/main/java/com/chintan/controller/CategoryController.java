@@ -21,8 +21,6 @@ import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.service.CategoryService;
 import com.chintan.util.CommonUtil;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/api/v1/category")
 public class CategoryController {
