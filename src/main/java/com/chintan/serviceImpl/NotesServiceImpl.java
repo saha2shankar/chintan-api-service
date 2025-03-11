@@ -16,6 +16,7 @@ import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.repository.CategoryRepository;
 import com.chintan.repository.NotesRepository;
 import com.chintan.service.NotesService;
+import com.chintan.util.Validation;
 
 @Service
 public class NotesServiceImpl implements NotesService {
@@ -28,10 +29,14 @@ public class NotesServiceImpl implements NotesService {
 
 	@Autowired
 	private ModelMapper mapper;
+	
+	@Autowired
+	private Validation validation;
 
 	@Override
 	public Boolean saveNote(NotesDto notesDto) throws Exception {
 		//category validation
+		validation.noteValidation(notesDto);
 		checkCategoryExist(notesDto.getCategory());
 		
 		Notes notes = mapper.map(notesDto, Notes.class);
