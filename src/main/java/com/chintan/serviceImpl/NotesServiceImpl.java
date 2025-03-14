@@ -1,22 +1,32 @@
 package com.chintan.serviceImpl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.chintan.dto.NotesDto;
 import com.chintan.dto.NotesDto.CategoryDto;
+import com.chintan.entity.FileDetails;
 import com.chintan.entity.Notes;
 import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.repository.CategoryRepository;
+import com.chintan.repository.FileRepository;
 import com.chintan.repository.NotesRepository;
 import com.chintan.service.NotesService;
 import com.chintan.util.Validation;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class NotesServiceImpl implements NotesService {
@@ -26,26 +36,97 @@ public class NotesServiceImpl implements NotesService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private FileRepository fileRepository;
 
 	@Autowired
 	private ModelMapper mapper;
 	
+	
+	
 	@Autowired
 	private Validation validation;
+	
+	@Value("${file.upload.path}")
+	private String uploadPath;
 
 	@Override
-	public Boolean saveNote(NotesDto notesDto) throws Exception {
+	public Boolean saveNote(String notes, MultipartFile file) throws Exception {
 		//category validation
-		validation.noteValidation(notesDto);
-		checkCategoryExist(notesDto.getCategory());
 		
-		Notes notes = mapper.map(notesDto, Notes.class);
-		Notes saveNotes = notesRepository.save(notes);
-		if (!ObjectUtils.isEmpty(saveNotes)) {
-			return true;
+		
+		ObjectMapper ob =new ObjectMapper();
+		NotesDto notesDto = ob.readValue(notes, NotesDto.class);
+		validation.noteValidation(notesDto);
+		 checkCategoryExist(notesDto.getCategory());
+			 
+		  Notes notesMap = mapper.map(notesDto, Notes.class); 
+	    FileDetails fileDetails =	saveFileDetails(file);
+	    
+	    if(!ObjectUtils.isEmpty(fileDetails)) {
+	    	notesMap.setFileDetails(fileDetails);
+	    } else {
+	    	notesMap.setFileDetails(null);
+	    }
+		
 
-		}
+		  Notes saveNotes =notesRepository.save(notesMap);
+		  if (!ObjectUtils.isEmpty(saveNotes)) { return
+		  true;
+		  
+		  }
+		
 		return false;
+	}
+
+	private FileDetails saveFileDetails(MultipartFile file) throws IOException {
+	if (!ObjectUtils.isEmpty(file) && !file.isEmpty()) {
+		String originalFilename = file.getOriginalFilename();
+		String extension = FilenameUtils.getExtension(originalFilename);
+		List<String> extensionAllow = Arrays.asList("pdf","xlsx","jpg","docx","txt");
+		if(!extensionAllow.contains(extension)) {
+			throw new IllegalArgumentException("invalid file format ! You can only add .pdf, .xlsx, .jpg, .docs, .txt");
+			
+		}
+		FileDetails fileDtls = new FileDetails();
+		
+		fileDtls.setOriginalFileName(originalFilename);
+		fileDtls.setDisplayFileName(getDisplayName(originalFilename));
+		String rndString = UUID.randomUUID().toString();
+		String uploadfileName = rndString+"."+extension;
+		fileDtls.setFileSize(file.getSize());
+		fileDtls.setUploadFileName(uploadfileName);
+		
+		File saveFile = new File (uploadPath);
+		if(!saveFile.exists()) {
+			saveFile.mkdir();
+		}
+		
+		String storePath = uploadPath.concat(uploadfileName);
+		fileDtls.setPath(storePath);
+		
+		long upload = Files.copy(file.getInputStream(),Paths.get(storePath));
+		if(upload!=0) {
+		FileDetails saveFileDetails = fileRepository.save(fileDtls);
+		return saveFileDetails;
+		}
+	
+		return null;
+	}
+		
+		return null;
+	}
+
+	private String getDisplayName(String originalFilename) {
+		// TODO Auto-generated method stub
+		String extension = FilenameUtils.getExtension(originalFilename);
+		String fileName = FilenameUtils.removeExtension(originalFilename);
+		if(fileName.length()>8) {
+			fileName = fileName.substring(0,7);
+		}
+		fileName = fileName +"."+extension;
+		return fileName;
 	}
 
 	private void checkCategoryExist(CategoryDto category) throws Exception {
