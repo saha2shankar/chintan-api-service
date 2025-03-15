@@ -1,7 +1,6 @@
 package com.chintan.serviceImpl;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,11 +14,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.chintan.dto.NoteResponse;
 import com.chintan.dto.NotesDto;
 import com.chintan.dto.NotesDto.CategoryDto;
 import com.chintan.entity.FileDetails;
@@ -158,5 +161,26 @@ public class NotesServiceImpl implements NotesService {
 		
 		return fileDetails;
 	}
+	
+	@Override
+	public NoteResponse getAllNotesByUser(Integer userId, Integer pageNo, Integer pageSize) {
+	    Pageable pageable = PageRequest.of(pageNo, pageSize);
+	    Page<Notes> pageNotes = notesRepository.findByCreatedBy(userId, pageable);
+	    
+	    List<NotesDto> notesDto = pageNotes.stream()
+	        .map(n -> mapper.map(n, NotesDto.class))
+	        .toList();
+
+	    return NoteResponse.builder()
+	        .notes(notesDto)
+	        .pageNo(pageNotes.getNumber())
+	        .pageSize(pageNotes.getSize())
+	        .totalElements(pageNotes.getTotalElements())
+	        .totalPages(pageNotes.getTotalPages())
+	        .isFirst(pageNotes.isFirst())
+	        .isLast(pageNotes.isLast())
+	        .build();
+	}
+
 
 }
