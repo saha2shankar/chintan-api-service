@@ -1,5 +1,6 @@
 package com.chintan.exception;
 
+import java.io.FileNotFoundException;
 import java.util.LinkedHashMap;
 
 import java.util.List;
@@ -58,6 +59,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ExistDataException.class)
 	public ResponseEntity<?> handleExistDataException(ExistDataException e) {
 		return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.CONFLICT);
+
+	}
+	
+	@ExceptionHandler(FileNotFoundException.class)
+	public ResponseEntity<?> handleFileNotFoundException(FileNotFoundException e) {
+		return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.NOT_FOUND);
 
 	}
 
