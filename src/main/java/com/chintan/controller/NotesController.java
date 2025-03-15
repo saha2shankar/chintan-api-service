@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.chintan.dto.NoteResponse;
 import com.chintan.dto.NotesDto;
 import com.chintan.entity.FileDetails;
 import com.chintan.service.NotesService;
@@ -59,6 +60,22 @@ public class NotesController {
 		if(ObjectUtils.isEmpty(allNotes)) {
 			return ResponseEntity.noContent().build();
 		}
+		return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/user-notes")
+	public ResponseEntity<?> getAllNotesByUser(
+			@RequestParam(name ="pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name ="pageSize", defaultValue = "10") Integer pageSize
+			
+			){
+		Integer userId = 6;
+		NoteResponse allNotes = notesService.getAllNotesByUser(userId, pageNo, pageSize);
+		
+		  if(ObjectUtils.isEmpty(allNotes)) { return
+		  ResponseEntity.noContent().build(); }
+		 
 		return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
 	}
 
