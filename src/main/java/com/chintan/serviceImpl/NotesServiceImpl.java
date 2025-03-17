@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.chintan.dto.NoteResponse;
 import com.chintan.dto.NotesDto;
 import com.chintan.dto.NotesDto.CategoryDto;
+import com.chintan.dto.NotesDto.FilesDto;
 import com.chintan.entity.FileDetails;
 import com.chintan.entity.Notes;
 import com.chintan.exception.ResourcesNotFoundException;
@@ -65,6 +66,11 @@ public class NotesServiceImpl implements NotesService {
 		
 		ObjectMapper ob =new ObjectMapper();
 		NotesDto notesDto = ob.readValue(notes, NotesDto.class);
+	
+	if(!ObjectUtils.isEmpty(notesDto.getId())) {
+		updateNotes(notesDto, file);
+	}
+		
 		validation.noteValidation(notesDto);
 		 checkCategoryExist(notesDto.getCategory());
 			 
@@ -74,24 +80,34 @@ public class NotesServiceImpl implements NotesService {
 	    if(!ObjectUtils.isEmpty(fileDetails)) {
 	    	notesMap.setFileDetails(fileDetails);
 	    } else {
-	    	notesMap.setFileDetails(null);
+	    	if(ObjectUtils.isEmpty(notesDto.getId())) {
+		    	notesMap.setFileDetails(null);
+
+	    	}
 	    }
 		
 
 		  Notes saveNotes =notesRepository.save(notesMap);
-		  if (!ObjectUtils.isEmpty(saveNotes)) { return
-		  true;
+		  if (!ObjectUtils.isEmpty(saveNotes)) {
+			  return true;
 		  
 		  }
 		
 		return false;
 	}
 
+	private void updateNotes(NotesDto notesDto, MultipartFile file) throws Exception {
+		Notes existNotes =  notesRepository.findById(notesDto.getId()).orElseThrow(()-> new ResourcesNotFoundException("Invalid Note id"));
+		if (ObjectUtils.isEmpty(file)) {
+            notesDto.setFileDetails(mapper.map(existNotes.getFileDetails(), FilesDto.class));
+        }
+	}
+
 	private FileDetails saveFileDetails(MultipartFile file) throws IOException {
 	if (!ObjectUtils.isEmpty(file) && !file.isEmpty()) {
 		String originalFilename = file.getOriginalFilename();
 		String extension = FilenameUtils.getExtension(originalFilename);
-		List<String> extensionAllow = Arrays.asList("pdf","xlsx","jpg","docx","txt");
+		List<String> extensionAllow = Arrays.asList("pdf","xlsx","jpg","docx","txt","png");
 		if(!extensionAllow.contains(extension)) {
 			throw new IllegalArgumentException("invalid file format ! You can only add .pdf, .xlsx, .jpg, .docs, .txt");
 			
@@ -118,8 +134,6 @@ public class NotesServiceImpl implements NotesService {
 		FileDetails saveFileDetails = fileRepository.save(fileDtls);
 		return saveFileDetails;
 		}
-	
-		return null;
 	}
 		
 		return null;
