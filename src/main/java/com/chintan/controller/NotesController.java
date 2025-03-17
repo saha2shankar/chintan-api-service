@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.chintan.dto.NoteResponse;
 import com.chintan.dto.NotesDto;
 import com.chintan.entity.FileDetails;
+import com.chintan.entity.Notes;
 import com.chintan.service.NotesService;
 import com.chintan.util.CommonUtil;
 
@@ -78,5 +79,35 @@ public class NotesController {
 		 
 		return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
 	}
+	
+	
+	@GetMapping("/delete/{id}")
+	public ResponseEntity<?> delteNotes(@PathVariable Integer id) throws Exception{
+		notesService.softDeleteNotes(id);
+		return CommonUtil.createBuildResponseMessage("Delted Success", HttpStatus.OK);
+		
+	}
+	
+
+	@GetMapping("/restore/{id}")
+	public ResponseEntity<?> restoreNotes(@PathVariable Integer id) throws Exception{
+		notesService.restoreNotes(id);
+		return CommonUtil.createBuildResponseMessage("Notes Restore success!", HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/recycle-bin")
+	public ResponseEntity<?> getUserRecycleBinNotes() throws Exception{
+		Integer userId = 6;
+		List<NotesDto> notes = notesService.getUserRecycleBinNotes(userId);
+		if(notes.isEmpty()) {
+return 		  ResponseEntity.noContent().build(); }
+
+		
+		return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
+		
+	}
+	
+	
 
 }
