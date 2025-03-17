@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,7 +74,7 @@ public class NotesServiceImpl implements NotesService {
 	}
 		
 		notesDto.setIsDeleted(false);
-		notesDto.setDeleteOn(null);
+notesDto.setDeletedOn(null);
 		validation.noteValidation(notesDto);
 		 checkCategoryExist(notesDto.getCategory());
 			 
@@ -203,7 +204,7 @@ public class NotesServiceImpl implements NotesService {
 	public void softDeleteNotes(Integer id) throws Exception {
 		Notes notes = notesRepository.findById(id).orElseThrow(()-> new ResourcesNotFoundException("Notes Inviled or not Found!"));
 		notes.setIsDeleted(true);
-		notes.setDeleteOn(new Date());
+		notes.setDeletedOn(LocalDateTime.now());
 		notesRepository.save(notes);
 		
 	}
@@ -212,7 +213,7 @@ public class NotesServiceImpl implements NotesService {
 	public void restoreNotes(Integer id) throws Exception {
 		Notes notes = notesRepository.findById(id).orElseThrow(()-> new ResourcesNotFoundException("Notes Inviled or not Found!"));
 		notes.setIsDeleted(false);
-		notes.setDeleteOn(null);
+		notes.setDeletedOn(null);
 		notesRepository.save(notes);
 		
 		
@@ -224,6 +225,26 @@ public class NotesServiceImpl implements NotesService {
 	List<NotesDto> noteDtoList = recycleBinNotes.stream().map(note -> mapper.map(note, NotesDto.class)).toList();
 		
 		return noteDtoList;
+	}
+
+	@Override
+	public void hardDeleteNotes(Integer id) throws Exception {
+	 Notes note = notesRepository.findById(id).orElseThrow(()-> new ResourcesNotFoundException("Notes Inviled or not Found!"));
+	 if(note.getIsDeleted()) {
+		 notesRepository.delete(note);
+	 }else {
+		 throw new IllegalArgumentException("you can't delete notes dirctly !");
+	 }
+		
+	}
+
+	@Override
+	public void emptyRecyclBin(int userId) {
+	List<Notes> recycleBinNote = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
+	if(!CollectionUtils.isEmpty(recycleBinNote)) {
+		notesRepository.deleteAll();
+	}
+		
 	}
 
 

@@ -13,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -36,6 +39,6 @@ public class Notes  extends BaseModel{
 	private FileDetails fileDetails;
 	
 	private Boolean isDeleted;
-	private Date deleteOn;
+    private LocalDateTime deletedOn;
 	
 }

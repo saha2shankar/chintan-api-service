@@ -1,5 +1,6 @@
 package com.chintan.dto;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class NotesDto {
 	private Date updateOn;
 	private FilesDto fileDetails;
 	private Boolean isDeleted;
-	private Date deleteOn;
+    private LocalDateTime deletedOn; // Ensure this field exists
 	
 	@Getter
 	@Setter
