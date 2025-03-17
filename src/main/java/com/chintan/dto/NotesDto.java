@@ -22,6 +22,8 @@ public class NotesDto {
 	private Integer updateBy;
 	private Date updateOn;
 	private FilesDto fileDetails;
+	private Boolean isDeleted;
+	private Date deleteOn;
 	
 	@Getter
 	@Setter

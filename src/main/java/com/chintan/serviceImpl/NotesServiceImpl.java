@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,6 +72,8 @@ public class NotesServiceImpl implements NotesService {
 		updateNotes(notesDto, file);
 	}
 		
+		notesDto.setIsDeleted(false);
+		notesDto.setDeleteOn(null);
 		validation.noteValidation(notesDto);
 		 checkCategoryExist(notesDto.getCategory());
 			 
@@ -194,6 +197,33 @@ public class NotesServiceImpl implements NotesService {
 	        .isFirst(pageNotes.isFirst())
 	        .isLast(pageNotes.isLast())
 	        .build();
+	}
+
+	@Override
+	public void softDeleteNotes(Integer id) throws Exception {
+		Notes notes = notesRepository.findById(id).orElseThrow(()-> new ResourcesNotFoundException("Notes Inviled or not Found!"));
+		notes.setIsDeleted(true);
+		notes.setDeleteOn(new Date());
+		notesRepository.save(notes);
+		
+	}
+
+	@Override
+	public void restoreNotes(Integer id) throws Exception {
+		Notes notes = notesRepository.findById(id).orElseThrow(()-> new ResourcesNotFoundException("Notes Inviled or not Found!"));
+		notes.setIsDeleted(false);
+		notes.setDeleteOn(null);
+		notesRepository.save(notes);
+		
+		
+	}
+
+	@Override
+	public List<NotesDto> getUserRecycleBinNotes(Integer userId) {
+	List<Notes> recycleBinNotes =notesRepository.findByCreatedByAndIsDeletedTrue(userId);
+	List<NotesDto> noteDtoList = recycleBinNotes.stream().map(note -> mapper.map(note, NotesDto.class)).toList();
+		
+		return noteDtoList;
 	}
 
 
