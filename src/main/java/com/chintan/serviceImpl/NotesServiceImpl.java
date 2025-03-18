@@ -24,14 +24,17 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.chintan.dto.FavoriteNoteDto;
 import com.chintan.dto.NoteResponse;
 import com.chintan.dto.NotesDto;
 import com.chintan.dto.NotesDto.CategoryDto;
 import com.chintan.dto.NotesDto.FilesDto;
+import com.chintan.entity.FavoriteNote;
 import com.chintan.entity.FileDetails;
 import com.chintan.entity.Notes;
 import com.chintan.exception.ResourcesNotFoundException;
 import com.chintan.repository.CategoryRepository;
+import com.chintan.repository.FavoriteNoteRepository;
 import com.chintan.repository.FileRepository;
 import com.chintan.repository.NotesRepository;
 import com.chintan.service.NotesService;
@@ -49,6 +52,9 @@ public class NotesServiceImpl implements NotesService {
 	
 	@Autowired
 	private FileRepository fileRepository;
+	
+	@Autowired
+	private FavoriteNoteRepository  favoriteNoteRepository;
 
 	@Autowired
 	private ModelMapper mapper;
@@ -246,6 +252,34 @@ notesDto.setDeletedOn(null);
 	}
 		
 	}
+
+	@Override
+	public void favoriteNotes(Integer noteId) throws Exception {
+		Integer userId = 6;
+		Notes notes = notesRepository.findById(noteId).orElseThrow(()-> new ResourcesNotFoundException("Notes Not found! invalid id"));
+		// TODO Auto-generated method stub
+		FavoriteNote favoriteNote = FavoriteNote.builder()
+				.note(notes)
+				.userId(userId)
+				.build();
+		favoriteNoteRepository.save(favoriteNote);
+	}
+
+	@Override
+	public void unFavoriteNotes(Integer favoriteNoteId) throws Exception{
+		FavoriteNote favoriteNote = favoriteNoteRepository.findById(favoriteNoteId).orElseThrow(()-> new ResourcesNotFoundException("Favorite Note Not found! invalid id"));
+		favoriteNoteRepository.deleteById(favoriteNoteId);
+	}
+
+	@Override
+	public List<FavoriteNoteDto> getUserFavoriteNotes() {
+		Integer userId = 6;
+		List<FavoriteNote> favoriteNotes = favoriteNoteRepository.findByUserId(userId);
+		
+		return	favoriteNotes.stream().map(fn -> mapper.map(fn, FavoriteNoteDto.class)).toList();
+		 
+	}
+
 
 
 }
