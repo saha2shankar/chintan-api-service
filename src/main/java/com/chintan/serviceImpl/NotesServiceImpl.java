@@ -280,6 +280,27 @@ notesDto.setDeletedOn(null);
 		 
 	}
 
+	@Override
+	public Boolean copyNotes(Integer id) throws Exception {
+		Notes notes = notesRepository.findById(id).orElseThrow(()-> new ResourcesNotFoundException("Notes Inviled or not Found!"));
+
+		/*
+		 * Notes copyNote = new Notes(); copyNote.setTitle(notes.getTitle());
+		 */
+		Notes copyNote = Notes.builder()
+				.title(notes.getTitle())
+				.description(notes.getDescription())
+				.category(notes.getCategory())
+				.isDeleted(false)
+				.fileDetails(null)
+				.build();
+		Notes saveCopyNotes=notesRepository.save(copyNote);
+		if(!ObjectUtils.isEmpty(saveCopyNotes)) {
+			return true;
+		}
+		return false;
+	}
+
 
 
 }

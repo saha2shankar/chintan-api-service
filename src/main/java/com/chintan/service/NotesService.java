@@ -26,6 +26,7 @@ public interface NotesService {
 	public void emptyRecyclBin(int userId);
 	public void favoriteNotes(Integer noteId) throws Exception;
 	public void unFavoriteNotes(Integer noteId) throws Exception;
-	public List<FavoriteNoteDto> getUserFavoriteNotes(); 
+	public List<FavoriteNoteDto> getUserFavoriteNotes();
+	public Boolean copyNotes(Integer id) throws Exception; 
 
 }
