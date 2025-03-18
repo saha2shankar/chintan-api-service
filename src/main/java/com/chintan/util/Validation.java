@@ -8,6 +8,10 @@ import org.springframework.util.ObjectUtils;
 
 import com.chintan.dto.CategoryDto;
 import com.chintan.dto.NotesDto;
+import com.chintan.dto.TodoDto;
+import com.chintan.dto.TodoDto.StatusDto;
+import com.chintan.enums.TodoStatus;
+import com.chintan.exception.ResourcesNotFoundException;
 
 @Component
 public class Validation {
@@ -86,6 +90,18 @@ public class Validation {
          if (!error.isEmpty()) {
              throw new  ValidationException(error);
          }
+    }
+    public void todoValidation(TodoDto todo) throws Exception {
+    	StatusDto reqStatus = todo.getStatus();
+    	Boolean statusFound = false;
+    	for(TodoStatus st: TodoStatus.values()) {
+    		if(st.getId().equals(reqStatus.getId())) {
+    			statusFound = true;
+    		}
+    	}
+    	if(!statusFound) {
+    		throw new ResourcesNotFoundException("Invalid Status");
+    	}
     }
     
 }
