@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.chintan.dto.FavoriteNoteDto;
 import com.chintan.dto.NoteResponse;
 import com.chintan.dto.NotesDto;
+import com.chintan.entity.FavoriteNote;
 import com.chintan.entity.FileDetails;
 import com.chintan.entity.Notes;
 import com.chintan.exception.ResourcesNotFoundException;
@@ -22,5 +24,8 @@ public interface NotesService {
 	public List<NotesDto> getUserRecycleBinNotes(Integer userId);
 	public void hardDeleteNotes(Integer id) throws Exception;
 	public void emptyRecyclBin(int userId);
+	public void favoriteNotes(Integer noteId) throws Exception;
+	public void unFavoriteNotes(Integer noteId) throws Exception;
+	public List<FavoriteNoteDto> getUserFavoriteNotes(); 
 
 }
