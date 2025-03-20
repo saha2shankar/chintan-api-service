@@ -2,18 +2,23 @@ package com.chintan.serviceImpl;
 
 import java.util.List;
 
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import com.chintan.dto.EmailRequest;
 import com.chintan.dto.UserDto;
 import com.chintan.entity.Role;
 import com.chintan.entity.User;
 import com.chintan.repository.RoleRepository;
 import com.chintan.repository.UserRepository;
+import com.chintan.service.EmailService;
 import com.chintan.service.UserService;
 import com.chintan.util.Validation;
+
+import jakarta.mail.MessagingException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,9 +34,11 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private ModelMapper mapper;
-
+	
+	@Autowired
+	private EmailService emailService;
 	@Override
-	public Boolean register(UserDto userDto) {
+	public Boolean register(UserDto userDto) throws Exception {
 
 		validation.userValidation(userDto);
 		
@@ -44,10 +51,43 @@ public class UserServiceImpl implements UserService {
 
 		User saveUser = userRepository.save(user);
 		if (!ObjectUtils.isEmpty(saveUser)) {
+			emailSend(saveUser);
 			return true;
 		}
 		return false;
 	}
+
+	private void emailSend(User saveUser) throws Exception {
+		String message ="<html>"
+	            + "<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>"
+	            + "<div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>"
+	            + "<h2 style='color: #4CAF50;'>Account Registration Successful</h2>"
+	            + "<p>Dear <strong>" + saveUser.getFirstName() + "</strong>,</p>"
+	            + "<p>Thank you for registering with us! Your account has been successfully created.</p>"
+	            + "<p>To complete your registration, please verify your email address by clicking the link below:</p>"
+	            + "<p style='text-align: center; margin: 20px 0;'>"
+	            + "<a href='#' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Your Account</a>"
+	            + "</p>"
+	            + "<p>If you did not create an account with us, please ignore this email.</p>"
+	            + "<p>Best regards,<br><strong>Chintan App Team</strong></p>"
+	            + "<hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
+	            + "<p style='font-size: 12px; color: #777;'>This is an automated message. Please do not reply to this email.</p>"
+	            + "</div>"
+	            + "</body>"
+	            + "</html>";
+		
+		EmailRequest emailRequest = EmailRequest.builder()
+				.to(saveUser.getEmail())
+				.title("Account Creating Confirmation")
+				.subject("Account Created Success")
+				.message(message)
+				.build();
+		emailService.sendEmail(emailRequest);
+		
+	}
+	
+	
+	
 
 	private void setRole(UserDto userDto, User user) {
 		List<Integer> reqRoleId = userDto.getRoles().stream().map(r -> r.getId()).toList();

@@ -13,14 +13,14 @@ import com.chintan.service.UserService;
 import com.chintan.util.CommonUtil;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
 	@Autowired
 	private UserService userService;
 	
 	@PostMapping("/save")
-	private ResponseEntity<?> registerUser( @RequestBody UserDto userDto){
+	private ResponseEntity<?> registerUser( @RequestBody UserDto userDto) throws Exception{
 		Boolean register = userService.register(userDto);
 		if(register) {
 			return CommonUtil.createBuildResponseMessage("Register Successfully", HttpStatus.CREATED);
