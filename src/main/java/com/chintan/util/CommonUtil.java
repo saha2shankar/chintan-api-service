@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.chintan.handler.GenericResponse;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public class CommonUtil {
 	public static ResponseEntity<?> createBuildResponse(Object data, HttpStatus status){
 		
@@ -69,6 +71,12 @@ case "jpeg":
 default:
 	return "application/octet-stream";
 }
+}
+
+public static String gerUrl(HttpServletRequest request) {
+	String apiUrl = request.getRequestURI().toString();
+	apiUrl = apiUrl.replace(request.getServletPath(), "");
+	return apiUrl;
 }
 
 }
