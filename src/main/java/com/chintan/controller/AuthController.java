@@ -12,6 +12,8 @@ import com.chintan.dto.UserDto;
 import com.chintan.service.UserService;
 import com.chintan.util.CommonUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {

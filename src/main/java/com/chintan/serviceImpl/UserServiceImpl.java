@@ -1,7 +1,7 @@
 package com.chintan.serviceImpl;
 
 import java.util.List;
-
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.chintan.dto.EmailRequest;
 import com.chintan.dto.UserDto;
+import com.chintan.entity.AccountStatus;
 import com.chintan.entity.Role;
 import com.chintan.entity.User;
 import com.chintan.repository.RoleRepository;
@@ -48,6 +49,12 @@ public class UserServiceImpl implements UserService {
 		
 
 		setRole(userDto, user);
+		AccountStatus accountStatus  = AccountStatus.builder()
+				
+				.isActive(false)
+				.verificationCode(UUID.randomUUID().toString())
+				.build();
+		user.setStatus(accountStatus);
 
 		User saveUser = userRepository.save(user);
 		if (!ObjectUtils.isEmpty(saveUser)) {
@@ -66,7 +73,7 @@ public class UserServiceImpl implements UserService {
 	            + "<p>Thank you for registering with us! Your account has been successfully created.</p>"
 	            + "<p>To complete your registration, please verify your email address by clicking the link below:</p>"
 	            + "<p style='text-align: center; margin: 20px 0;'>"
-	            + "<a href='#' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Your Account</a>"
+	            + "<a href='http://localhost:8080/api/v1/home/verify?id="+saveUser.getId()+"&&vc="+saveUser.getStatus().getVerificationCode()+"' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Your Account</a>"
 	            + "</p>"
 	            + "<p>If you did not create an account with us, please ignore this email.</p>"
 	            + "<p>Best regards,<br><strong>Chintan App Team</strong></p>"
@@ -75,19 +82,15 @@ public class UserServiceImpl implements UserService {
 	            + "</div>"
 	            + "</body>"
 	            + "</html>";
-		
+		//	     	message = message.replace("[[url]]", url+"api/v1/home/verify?id="+saveUser.getId()+"&&vc="+saveUser.getStatus().getVerificationCode());
 		EmailRequest emailRequest = EmailRequest.builder()
 				.to(saveUser.getEmail())
 				.title("Account Creating Confirmation")
 				.subject("Account Created Success")
 				.message(message)
 				.build();
-		emailService.sendEmail(emailRequest);
-		
+		emailService.sendEmail(emailRequest);	
 	}
-	
-	
-	
 
 	private void setRole(UserDto userDto, User user) {
 		List<Integer> reqRoleId = userDto.getRoles().stream().map(r -> r.getId()).toList();
