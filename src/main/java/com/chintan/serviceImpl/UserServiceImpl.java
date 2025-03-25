@@ -5,10 +5,17 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import com.chintan.config.security.CustomUserDetails;
 import com.chintan.dto.EmailRequest;
+import com.chintan.dto.LoginRequest;
+import com.chintan.dto.LoginResponse;
 import com.chintan.dto.UserDto;
 import com.chintan.entity.AccountStatus;
 import com.chintan.entity.Role;
@@ -38,6 +45,12 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
 	@Override
 	public Boolean register(UserDto userDto) throws Exception {
 
@@ -45,9 +58,6 @@ public class UserServiceImpl implements UserService {
 		
 		
 		User user = mapper.map(userDto, User.class);
-		
-		
-
 		setRole(userDto, user);
 		AccountStatus accountStatus  = AccountStatus.builder()
 				
@@ -55,7 +65,7 @@ public class UserServiceImpl implements UserService {
 				.verificationCode(UUID.randomUUID().toString())
 				.build();
 		user.setStatus(accountStatus);
-
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		User saveUser = userRepository.save(user);
 		if (!ObjectUtils.isEmpty(saveUser)) {
 			emailSend(saveUser);
@@ -96,6 +106,22 @@ public class UserServiceImpl implements UserService {
 		List<Integer> reqRoleId = userDto.getRoles().stream().map(r -> r.getId()).toList();
 		List<Role> roles = roleRepository.findAllById(reqRoleId);
 		user.setRoles(roles);
+	}
+
+	@Override
+	public LoginResponse login(LoginRequest loginRequest) {
+		Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+		if(authenticate.isAuthenticated()) {
+			 CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
+			 String token = "kdfssafwfejewjkfjkadskdsijwefakj";
+			 LoginResponse loginResponse = LoginResponse.builder()
+					 .user(mapper.map(customUserDetails.getUser(),UserDto.class))
+					 .token(token)
+					 .build();
+			 return loginResponse;
+		}
+		
+		return null;
 	}
 
 

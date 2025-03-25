@@ -1,8 +1,12 @@
 package com.chintan.service;
 
+import com.chintan.dto.LoginRequest;
+import com.chintan.dto.LoginResponse;
 import com.chintan.dto.UserDto;
 
 public interface UserService {
 
 	public Boolean register(UserDto userDto) throws Exception;
+
+	public LoginResponse login(LoginRequest loginRequest);
 }
