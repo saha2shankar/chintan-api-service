@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.chintan.dto.LoginRequest;
 import com.chintan.dto.LoginResponse;
 import com.chintan.dto.UserRequest;
-import com.chintan.service.UserService;
+import com.chintan.service.AuthService;
 import com.chintan.util.CommonUtil;
 
 @RestController
@@ -20,11 +20,11 @@ import com.chintan.util.CommonUtil;
 public class AuthController {
 
 	@Autowired
-	private UserService userService;
+	private AuthService authService;
 	
 	@PostMapping("/register")
 	private ResponseEntity<?> registerUser( @RequestBody UserRequest userRequest) throws Exception{
-		Boolean register = userService.register(userRequest);
+		Boolean register = authService.register(userRequest);
 		if(register) {
 			return CommonUtil.createBuildResponseMessage("Register Successfully", HttpStatus.CREATED);
 		}
@@ -34,7 +34,7 @@ public class AuthController {
 	@PostMapping("/login")
 	private ResponseEntity<?> loginUser( @RequestBody LoginRequest loginRequest) throws Exception{
 		
-		LoginResponse loginResponse = userService.login(loginRequest);
+		LoginResponse loginResponse = authService.login(loginRequest);
 		if(ObjectUtils.isEmpty(loginResponse)) {
 			return CommonUtil.createErrorResponseMessage("invalid Credential", HttpStatus.BAD_REQUEST);
 		}
