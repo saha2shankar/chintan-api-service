@@ -23,10 +23,9 @@ import com.chintan.entity.User;
 import com.chintan.repository.RoleRepository;
 import com.chintan.repository.UserRepository;
 import com.chintan.service.EmailService;
+import com.chintan.service.JwtService;
 import com.chintan.service.UserService;
 import com.chintan.util.Validation;
-
-import jakarta.mail.MessagingException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,6 +50,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private JwtService jwtService;
+	
 	@Override
 	public Boolean register(UserDto userDto) throws Exception {
 
@@ -113,7 +116,7 @@ public class UserServiceImpl implements UserService {
 		Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 		if(authenticate.isAuthenticated()) {
 			 CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
-			 String token = "kdfssafwfejewjkfjkadskdsijwefakj";
+			 String token = jwtService.generateToken(customUserDetails.getUser());
 			 LoginResponse loginResponse = LoginResponse.builder()
 					 .user(mapper.map(customUserDetails.getUser(),UserDto.class))
 					 .token(token)
