@@ -14,7 +14,7 @@ import com.chintan.dto.CategoryDto;
 import com.chintan.dto.NotesDto;
 import com.chintan.dto.TodoDto;
 import com.chintan.dto.TodoDto.StatusDto;
-import com.chintan.dto.UserDto;
+import com.chintan.dto.UserRequest;
 import com.chintan.enums.TodoStatus;
 import com.chintan.exception.ExistDataException;
 import com.chintan.exception.ResourcesNotFoundException;
@@ -117,38 +117,38 @@ public class Validation {
     	}
     }
     
-	public void userValidation(UserDto userDto) {
+	public void userValidation(UserRequest userRequest) {
 
-		if (!StringUtils.hasText(userDto.getFirstName())) {
+		if (!StringUtils.hasText(userRequest.getFirstName())) {
 			throw new IllegalArgumentException("first name is invalid");
 		}
 
-		if (!StringUtils.hasText(userDto.getLastName())) {
+		if (!StringUtils.hasText(userRequest.getLastName())) {
 			throw new IllegalArgumentException("last name is invalid");
 		}
 
-		if (!StringUtils.hasText(userDto.getEmail()) || !userDto.getEmail().matches(Constants.EMAIL_REGEX)) {
+		if (!StringUtils.hasText(userRequest.getEmail()) || !userRequest.getEmail().matches(Constants.EMAIL_REGEX)) {
 			throw new IllegalArgumentException("email is invalid");
 		}else {
 			// email exits
-			Boolean existEmail = userRepository.existsByEmail(userDto.getEmail());
+			Boolean existEmail = userRepository.existsByEmail(userRequest.getEmail());
 			if(existEmail) {
 				throw new ExistDataException("Email already exists !");
 			}
 			
 		}
 
-		if (!StringUtils.hasText(userDto.getMobileNo()) || !userDto.getMobileNo().matches(Constants.MOBILE_REGEX)) {
+		if (!StringUtils.hasText(userRequest.getMobileNo()) || !userRequest.getMobileNo().matches(Constants.MOBILE_REGEX)) {
 			throw new IllegalArgumentException("mobno is invalid");
 		}
 
-		if (CollectionUtils.isEmpty(userDto.getRoles())) {
+		if (CollectionUtils.isEmpty(userRequest.getRoles())) {
 			throw new IllegalArgumentException("role is invalid");
 		} else {
 
 			List<Integer> roleIds = roleRepository.findAll().stream().map(r -> r.getId()).toList();
 
-			List<Integer> invalidReqRoleids = userDto.getRoles().stream().map(r -> r.getId())
+			List<Integer> invalidReqRoleids = userRequest.getRoles().stream().map(r -> r.getId())
 					.filter(roleId -> !roleIds.contains(roleId)).toList();
 
 			if (!CollectionUtils.isEmpty(invalidReqRoleids)) {

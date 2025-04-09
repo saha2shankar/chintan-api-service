@@ -16,7 +16,7 @@ import com.chintan.config.security.CustomUserDetails;
 import com.chintan.dto.EmailRequest;
 import com.chintan.dto.LoginRequest;
 import com.chintan.dto.LoginResponse;
-import com.chintan.dto.UserDto;
+import com.chintan.dto.UserRequest;
 import com.chintan.entity.AccountStatus;
 import com.chintan.entity.Role;
 import com.chintan.entity.User;
@@ -55,13 +55,13 @@ public class UserServiceImpl implements UserService {
 	private JwtService jwtService;
 	
 	@Override
-	public Boolean register(UserDto userDto) throws Exception {
+	public Boolean register(UserRequest userRequest) throws Exception {
 
-		validation.userValidation(userDto);
+		validation.userValidation(userRequest);
 		
 		
-		User user = mapper.map(userDto, User.class);
-		setRole(userDto, user);
+		User user = mapper.map(userRequest, User.class);
+		setRole(userRequest, user);
 		AccountStatus accountStatus  = AccountStatus.builder()
 				
 				.isActive(false)
@@ -105,8 +105,8 @@ public class UserServiceImpl implements UserService {
 		emailService.sendEmail(emailRequest);	
 	}
 
-	private void setRole(UserDto userDto, User user) {
-		List<Integer> reqRoleId = userDto.getRoles().stream().map(r -> r.getId()).toList();
+	private void setRole(UserRequest userRequest, User user) {
+		List<Integer> reqRoleId = userRequest.getRoles().stream().map(r -> r.getId()).toList();
 		List<Role> roles = roleRepository.findAllById(reqRoleId);
 		user.setRoles(roles);
 	}
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
 			 CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
 			 String token = jwtService.generateToken(customUserDetails.getUser());
 			 LoginResponse loginResponse = LoginResponse.builder()
-					 .user(mapper.map(customUserDetails.getUser(),UserDto.class))
+					 .user(mapper.map(customUserDetails.getUser(),UserRequest.class))
 					 .token(token)
 					 .build();
 			 return loginResponse;

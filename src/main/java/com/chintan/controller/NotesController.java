@@ -34,20 +34,22 @@ import io.micrometer.common.lang.Nullable;
 public class NotesController {
 	@Autowired
 	private NotesService notesService;
-	
+
 	@PostMapping("/save-note")
-	public ResponseEntity<?> saveNotes(@RequestParam String  notes, @RequestParam(required = false) MultipartFile file) throws Exception{
+	public ResponseEntity<?> saveNotes(@RequestParam String notes, @RequestParam(required = false) MultipartFile file)
+			throws Exception {
 		Boolean saveNote = notesService.saveNote(notes, file);
-		if(saveNote) {
+		if (saveNote) {
 			return CommonUtil.createBuildResponseMessage("Notes Saved Success", HttpStatus.CREATED);
-		}else {
-			return CommonUtil.createErrorResponseMessage("something is woring save failed", HttpStatus.INTERNAL_SERVER_ERROR);
+		} else {
+			return CommonUtil.createErrorResponseMessage("something is woring save failed",
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		 
+
 	}
-	
+
 	@GetMapping("/download/{id}")
-	public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws Exception{
+	public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws Exception {
 		FileDetails fileDetails = notesService.getFileDetails(id);
 		byte[] data = notesService.downloadFile(fileDetails);
 		HttpHeaders headers = new HttpHeaders();
@@ -55,113 +57,108 @@ public class NotesController {
 		headers.setContentType(MediaType.parseMediaType(contentType));
 		headers.setContentDispositionFormData("attachment", fileDetails.getOriginalFileName());
 		return ResponseEntity.ok().headers(headers).body(data);
-		
+
 	}
-	
+
 	@GetMapping("/notes")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<?> getNotes(){
+	public ResponseEntity<?> getNotes() {
 		List<NotesDto> allNotes = notesService.getAllNotes();
-		if(ObjectUtils.isEmpty(allNotes)) {
+		if (ObjectUtils.isEmpty(allNotes)) {
 			return ResponseEntity.noContent().build();
 		}
 		return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("/user-notes")
-	
-	public ResponseEntity<?> getAllNotesByUser(
-			@RequestParam(name ="pageNo", defaultValue = "0") Integer pageNo,
-			@RequestParam(name ="pageSize", defaultValue = "10") Integer pageSize
-			
-			){
-		Integer userId = 6;
-		NoteResponse allNotes = notesService.getAllNotesByUser(userId, pageNo, pageSize);
+
+	public ResponseEntity<?> getAllNotesByUser(@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize
+
+	) {
 		
-		  if(ObjectUtils.isEmpty(allNotes)) { return
-		  ResponseEntity.noContent().build(); }
-		 
+		NoteResponse allNotes = notesService.getAllNotesByUser(pageNo, pageSize);
+
+		if (ObjectUtils.isEmpty(allNotes)) {
+			return ResponseEntity.noContent().build();
+		}
+
 		return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/delete/{id}")
-	public ResponseEntity<?> delteNotes(@PathVariable Integer id) throws Exception{
+	public ResponseEntity<?> delteNotes(@PathVariable Integer id) throws Exception {
 		notesService.softDeleteNotes(id);
 		return CommonUtil.createBuildResponseMessage("Delted Success", HttpStatus.OK);
-		
+
 	}
-	
 
 	@GetMapping("/restore/{id}")
-	public ResponseEntity<?> restoreNotes(@PathVariable Integer id) throws Exception{
+	public ResponseEntity<?> restoreNotes(@PathVariable Integer id) throws Exception {
 		notesService.restoreNotes(id);
 		return CommonUtil.createBuildResponseMessage("Notes Restore success!", HttpStatus.OK);
-		
-	}
-	
-	@GetMapping("/recycle-bin")
-	public ResponseEntity<?> getUserRecycleBinNotes() throws Exception{
-		Integer userId = 6;
-		List<NotesDto> notes = notesService.getUserRecycleBinNotes(userId);
-		if(notes.isEmpty()) {
-return 		  ResponseEntity.noContent().build(); }
 
-		
-		return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
-		
 	}
-	
+
+	@GetMapping("/recycle-bin")
+	public ResponseEntity<?> getUserRecycleBinNotes() throws Exception {
+		List<NotesDto> notes = notesService.getUserRecycleBinNotes();
+		if (notes.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+
+		return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
+
+	}
+
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<?> hardDeleteNotes(@PathVariable Integer id) throws Exception{
+	public ResponseEntity<?> hardDeleteNotes(@PathVariable Integer id) throws Exception {
 		notesService.hardDeleteNotes(id);
 		return CommonUtil.createBuildResponseMessage("Delted Success", HttpStatus.OK);
-		
+
 	}
-	
+
 	@DeleteMapping("/empty-recycle-bin")
-	public ResponseEntity<?> emptyRecycleBin() throws Exception{
-		int userId = 6;
-		notesService.emptyRecyclBin(userId);
+	public ResponseEntity<?> emptyUserRecycleBin() throws Exception {
+		notesService.emptyRecyclBin();
 		return CommonUtil.createBuildResponseMessage("All Notes Deleted", HttpStatus.OK);
-		
+
 	}
-	
+
 	@GetMapping("/favorite/{noteId}")
-	public ResponseEntity<?> favoriteNote(@PathVariable Integer noteId) throws Exception{
+	public ResponseEntity<?> favoriteNote(@PathVariable Integer noteId) throws Exception {
 		notesService.favoriteNotes(noteId);
 		return CommonUtil.createBuildResponseMessage("Note added as favorite", HttpStatus.OK);
-		
+
 	}
+
 	@DeleteMapping("/unfavorite/{fevNoteId}")
-	public ResponseEntity<?> UnFavoriteNote(@PathVariable Integer fevNoteId) throws Exception{
+	public ResponseEntity<?> UnFavoriteNote(@PathVariable Integer fevNoteId) throws Exception {
 		notesService.unFavoriteNotes(fevNoteId);
 		return CommonUtil.createBuildResponseMessage("Note remove as favorite", HttpStatus.OK);
-		
+
 	}
-	
+
 	@GetMapping("/favoriteNotes")
-	public ResponseEntity<?> getAllFavorites(){
+	public ResponseEntity<?> getAllFavorites() {
 		List<FavoriteNoteDto> userFavoriteNotes = notesService.getUserFavoriteNotes();
-		
-		  if(ObjectUtils.isEmpty(userFavoriteNotes)) { return
-		  ResponseEntity.noContent().build(); }
-		 
+
+		if (ObjectUtils.isEmpty(userFavoriteNotes)) {
+			return ResponseEntity.noContent().build();
+		}
+
 		return CommonUtil.createBuildResponse(userFavoriteNotes, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/copy/{id}")
-	public ResponseEntity<?> copyNotes(@PathVariable Integer id) throws Exception{
+	public ResponseEntity<?> copyNotes(@PathVariable Integer id) throws Exception {
 		Boolean copyNotes = notesService.copyNotes(id);
-		if(copyNotes) {
+		if (copyNotes) {
 			return CommonUtil.createBuildResponseMessage("Copied success", HttpStatus.OK);
-	
+
 		}
 		return CommonUtil.createErrorResponseMessage("Copied failed ! Try Again", HttpStatus.INTERNAL_SERVER_ERROR);
-		
+
 	}
-	
-	
-	
 
 }
