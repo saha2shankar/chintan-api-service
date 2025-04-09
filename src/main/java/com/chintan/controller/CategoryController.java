@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,7 @@ public class CategoryController {
 	private CategoryService categoryService;
 
 	@PostMapping("/save-category") // @Valid
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categorydto) {
 		Boolean saveCategory = categoryService.saveCategory(categorydto);
 		if (saveCategory) {
@@ -39,6 +41,7 @@ public class CategoryController {
 	}
 
 	@GetMapping("/categories")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAllCategory() {
 		List<CategoryDto> allCategory = categoryService.getAllCategory();
 		if (CollectionUtils.isEmpty(allCategory)) {
@@ -48,7 +51,9 @@ public class CategoryController {
 		}
 	}
 
+	
 	@GetMapping("/active-category")
+	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	public ResponseEntity<?> getActiveCategory() {
 		List<CategoryResponse> allCategory = categoryService.getActiveCategory();
 
@@ -82,6 +87,7 @@ public class CategoryController {
 
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/delete-category/{id}")
 	public ResponseEntity<?> deleteCategory(@PathVariable Integer id) throws Exception {
 

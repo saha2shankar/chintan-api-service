@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +59,7 @@ public class NotesController {
 	}
 	
 	@GetMapping("/notes")
+	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<?> getNotes(){
 		List<NotesDto> allNotes = notesService.getAllNotes();
 		if(ObjectUtils.isEmpty(allNotes)) {
@@ -68,6 +70,7 @@ public class NotesController {
 	
 	
 	@GetMapping("/user-notes")
+	
 	public ResponseEntity<?> getAllNotesByUser(
 			@RequestParam(name ="pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name ="pageSize", defaultValue = "10") Integer pageSize
