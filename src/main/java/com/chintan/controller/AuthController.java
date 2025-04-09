@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chintan.dto.LoginRequest;
 import com.chintan.dto.LoginResponse;
-import com.chintan.dto.UserDto;
+import com.chintan.dto.UserRequest;
 import com.chintan.service.UserService;
 import com.chintan.util.CommonUtil;
 
@@ -23,8 +23,8 @@ public class AuthController {
 	private UserService userService;
 	
 	@PostMapping("/register")
-	private ResponseEntity<?> registerUser( @RequestBody UserDto userDto) throws Exception{
-		Boolean register = userService.register(userDto);
+	private ResponseEntity<?> registerUser( @RequestBody UserRequest userRequest) throws Exception{
+		Boolean register = userService.register(userRequest);
 		if(register) {
 			return CommonUtil.createBuildResponseMessage("Register Successfully", HttpStatus.CREATED);
 		}

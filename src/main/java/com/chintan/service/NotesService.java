@@ -16,12 +16,12 @@ public interface NotesService {
 	public Boolean saveNote(String notes, MultipartFile file) throws Exception;
 	public byte[] downloadFile(FileDetails fileDetails) throws Exception;
 	public FileDetails getFileDetails(Integer id) throws Exception;
-	public NoteResponse getAllNotesByUser(Integer userId, Integer pageNo, Integer pageSize);
+	public NoteResponse getAllNotesByUser(Integer pageNo, Integer pageSize);
 	public void softDeleteNotes(Integer id) throws Exception;
 	public void restoreNotes(Integer id) throws Exception;
-	public List<NotesDto> getUserRecycleBinNotes(Integer userId);
+	public List<NotesDto> getUserRecycleBinNotes();
 	public void hardDeleteNotes(Integer id) throws Exception;
-	public void emptyRecyclBin(int userId);
+	public void emptyRecyclBin();
 	public void favoriteNotes(Integer noteId) throws Exception;
 	public void unFavoriteNotes(Integer noteId) throws Exception;
 	public List<FavoriteNoteDto> getUserFavoriteNotes();

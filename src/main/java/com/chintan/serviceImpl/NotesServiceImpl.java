@@ -39,6 +39,7 @@ import com.chintan.repository.FavoriteNoteRepository;
 import com.chintan.repository.FileRepository;
 import com.chintan.repository.NotesRepository;
 import com.chintan.service.NotesService;
+import com.chintan.util.CommonUtil;
 import com.chintan.util.Validation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -188,7 +189,8 @@ notesDto.setDeletedOn(null);
 	}
 	
 	@Override
-	public NoteResponse getAllNotesByUser(Integer userId, Integer pageNo, Integer pageSize) {
+	public NoteResponse getAllNotesByUser( Integer pageNo, Integer pageSize) {
+		Integer userId = CommonUtil.getLoggedInUser().getId();
 	    Pageable pageable = PageRequest.of(pageNo, pageSize);
 	    Page<Notes> pageNotes = notesRepository.findByCreatedBy(userId, pageable);
 	    
@@ -227,7 +229,8 @@ notesDto.setDeletedOn(null);
 	}
 
 	@Override
-	public List<NotesDto> getUserRecycleBinNotes(Integer userId) {
+	public List<NotesDto> getUserRecycleBinNotes() {
+		Integer userId = CommonUtil.getLoggedInUser().getId();
 	List<Notes> recycleBinNotes =notesRepository.findByCreatedByAndIsDeletedTrue(userId);
 	List<NotesDto> noteDtoList = recycleBinNotes.stream().map(note -> mapper.map(note, NotesDto.class)).toList();
 		
@@ -246,7 +249,8 @@ notesDto.setDeletedOn(null);
 	}
 
 	@Override
-	public void emptyRecyclBin(int userId) {
+	public void emptyRecyclBin() {
+		Integer userId = CommonUtil.getLoggedInUser().getId();
 	List<Notes> recycleBinNote = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
 	if(!CollectionUtils.isEmpty(recycleBinNote)) {
 		notesRepository.deleteAll();
@@ -256,7 +260,7 @@ notesDto.setDeletedOn(null);
 
 	@Override
 	public void favoriteNotes(Integer noteId) throws Exception {
-		Integer userId = 6;
+		Integer userId = CommonUtil.getLoggedInUser().getId();
 		Notes notes = notesRepository.findById(noteId).orElseThrow(()-> new ResourcesNotFoundException("Notes Not found! invalid id"));
 		// TODO Auto-generated method stub
 		FavoriteNote favoriteNote = FavoriteNote.builder()
@@ -274,7 +278,7 @@ notesDto.setDeletedOn(null);
 
 	@Override
 	public List<FavoriteNoteDto> getUserFavoriteNotes() {
-		Integer userId = 6;
+		Integer userId = CommonUtil.getLoggedInUser().getId();
 		List<FavoriteNote> favoriteNotes = favoriteNoteRepository.findByUserId(userId);
 		
 		return	favoriteNotes.stream().map(fn -> mapper.map(fn, FavoriteNoteDto.class)).toList();
