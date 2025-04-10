@@ -2,7 +2,7 @@ spring:
   application:
     name: chintan_api_service
   profiles:
-    active: test
+    active: dev
 
 ---
 #dev Config
