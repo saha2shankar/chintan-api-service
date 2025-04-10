@@ -1,0 +1,3 @@
+2025-10-14 15:14:03.732 INFO  [http-nio-8080-exec-5] c.c.serviceImpl.AuthServiceImpl - Message: email send success
+2025-10-14 15:14:03.733 INFO  [http-nio-8080-exec-5] c.c.serviceImpl.AuthServiceImpl - AuthServiceImpl : register() : Exceution End
+2025-10-14 15:14:03.733 INFO  [http-nio-8080-exec-5] c.chintan.controller.AuthController - AuthController : registerUser() : Exceution End

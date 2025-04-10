@@ -28,6 +28,9 @@ import com.chintan.service.JwtService;
 import com.chintan.service.AuthService;
 import com.chintan.util.Validation;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -42,68 +45,63 @@ public class AuthServiceImpl implements AuthService {
 
 	@Autowired
 	private ModelMapper mapper;
-	
+
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private JwtService jwtService;
-	
+
 	@Override
 	public Boolean register(UserRequest userRequest) throws Exception {
-
+		log.info("AuthServiceImpl : register() : Exceution Start");
 		validation.userValidation(userRequest);
-		
-		
+
 		User user = mapper.map(userRequest, User.class);
 		setRole(userRequest, user);
-		AccountStatus accountStatus  = AccountStatus.builder()
-				
-				.isActive(false)
-				.verificationCode(UUID.randomUUID().toString())
-				.build();
+		AccountStatus accountStatus = AccountStatus.builder()
+
+				.isActive(false).verificationCode(UUID.randomUUID().toString()).build();
 		user.setStatus(accountStatus);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		User saveUser = userRepository.save(user);
-		if (!ObjectUtils.isEmpty(saveUser)) {
-			emailSendForRegiser(saveUser);
-			return true;
+		if (ObjectUtils.isEmpty(saveUser)) {
+			log.info("Error: {}", "user not saved");
+			return false;
 		}
-		return false;
+		emailSendForRegiser(saveUser);
+		log.info("Message: {}", "email send success");
+		log.info("AuthServiceImpl : register() : Exceution End");
+		return true;
 	}
 
 	private void emailSendForRegiser(User saveUser) throws Exception {
-		String message ="<html>"
-	            + "<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>"
-	            + "<div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>"
-	            + "<h2 style='color: #4CAF50;'>Account Registration Successful</h2>"
-	            + "<p>Dear <strong>" + saveUser.getFirstName() + "</strong>,</p>"
-	            + "<p>Thank you for registering with us! Your account has been successfully created.</p>"
-	            + "<p>To complete your registration, please verify your email address by clicking the link below:</p>"
-	            + "<p style='text-align: center; margin: 20px 0;'>"
-	            + "<a href='http://localhost:8080/api/v1/home/verify?id="+saveUser.getId()+"&&vc="+saveUser.getStatus().getVerificationCode()+"' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Your Account</a>"
-	            + "</p>"
-	            + "<p>If you did not create an account with us, please ignore this email.</p>"
-	            + "<p>Best regards,<br><strong>Chintan App Team</strong></p>"
-	            + "<hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
-	            + "<p style='font-size: 12px; color: #777;'>This is an automated message. Please do not reply to this email.</p>"
-	            + "</div>"
-	            + "</body>"
-	            + "</html>";
-		//	     	message = message.replace("[[url]]", url+"api/v1/home/verify?id="+saveUser.getId()+"&&vc="+saveUser.getStatus().getVerificationCode());
-		EmailRequest emailRequest = EmailRequest.builder()
-				.to(saveUser.getEmail())
-				.title("Account Creating Confirmation")
-				.subject("Account Created Success")
-				.message(message)
-				.build();
-		emailService.sendEmail(emailRequest);	
+		String message = "<html>" + "<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>"
+				+ "<div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>"
+				+ "<h2 style='color: #4CAF50;'>Account Registration Successful</h2>" + "<p>Dear <strong>"
+				+ saveUser.getFirstName() + "</strong>,</p>"
+				+ "<p>Thank you for registering with us! Your account has been successfully created.</p>"
+				+ "<p>To complete your registration, please verify your email address by clicking the link below:</p>"
+				+ "<p style='text-align: center; margin: 20px 0;'>"
+				+ "<a href='http://localhost:8080/api/v1/home/verify?id=" + saveUser.getId() + "&&vc="
+				+ saveUser.getStatus().getVerificationCode()
+				+ "' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Verify Your Account</a>"
+				+ "</p>" + "<p>If you did not create an account with us, please ignore this email.</p>"
+				+ "<p>Best regards,<br><strong>Chintan App Team</strong></p>"
+				+ "<hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>"
+				+ "<p style='font-size: 12px; color: #777;'>This is an automated message. Please do not reply to this email.</p>"
+				+ "</div>" + "</body>" + "</html>";
+		// message = message.replace("[[url]]",
+		// url+"api/v1/home/verify?id="+saveUser.getId()+"&&vc="+saveUser.getStatus().getVerificationCode());
+		EmailRequest emailRequest = EmailRequest.builder().to(saveUser.getEmail())
+				.title("Account Creating Confirmation").subject("Account Created Success").message(message).build();
+		emailService.sendEmail(emailRequest);
 	}
 
 	private void setRole(UserRequest userRequest, User user) {
@@ -114,19 +112,17 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public LoginResponse login(LoginRequest loginRequest) {
-		Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-		if(authenticate.isAuthenticated()) {
-			 CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
-			 String token = jwtService.generateToken(customUserDetails.getUser());
-			 LoginResponse loginResponse = LoginResponse.builder()
-					 .user(mapper.map(customUserDetails.getUser(),UserResponse.class))
-					 .token(token)
-					 .build();
-			 return loginResponse;
+		Authentication authenticate = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+		if (authenticate.isAuthenticated()) {
+			CustomUserDetails customUserDetails = (CustomUserDetails) authenticate.getPrincipal();
+			String token = jwtService.generateToken(customUserDetails.getUser());
+			LoginResponse loginResponse = LoginResponse.builder()
+					.user(mapper.map(customUserDetails.getUser(), UserResponse.class)).token(token).build();
+			return loginResponse;
 		}
-		
+
 		return null;
 	}
-
 
 }
