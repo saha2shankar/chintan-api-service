@@ -25,6 +25,7 @@ public interface NotesService {
 	public void favoriteNotes(Integer noteId) throws Exception;
 	public void unFavoriteNotes(Integer noteId) throws Exception;
 	public List<FavoriteNoteDto> getUserFavoriteNotes();
-	public Boolean copyNotes(Integer id) throws Exception; 
+	public Boolean copyNotes(Integer id) throws Exception;
+	public NoteResponse getSearchByUser(Integer pageNo, Integer pageSize, String keyword);
 
 }
