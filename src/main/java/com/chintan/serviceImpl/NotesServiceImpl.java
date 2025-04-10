@@ -306,6 +306,28 @@ notesDto.setDeletedOn(null);
 		return false;
 	}
 
+	@Override
+	public NoteResponse getSearchByUser(Integer pageNo, Integer pageSize, String  keyword) {
+		Integer userId = CommonUtil.getLoggedInUser().getId();
+	    Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+	    Page<Notes> pageNotes = notesRepository.searchNotes(keyword, userId, pageable);
+	    
+	    List<NotesDto> notesDto = pageNotes.stream()
+	        .map(n -> mapper.map(n, NotesDto.class))
+	        .toList();
+
+	    return NoteResponse.builder()
+	        .notes(notesDto)
+	        .pageNo(pageNotes.getNumber())
+	        .pageSize(pageNotes.getSize())
+	        .totalElements(pageNotes.getTotalElements())
+	        .totalPages(pageNotes.getTotalPages())
+	        .isFirst(pageNotes.isFirst())
+	        .isLast(pageNotes.isLast())
+	        .build();
+	}
+
 
 
 }
