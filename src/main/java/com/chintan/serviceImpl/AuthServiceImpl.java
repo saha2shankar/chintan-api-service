@@ -72,13 +72,13 @@ public class AuthServiceImpl implements AuthService {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		User saveUser = userRepository.save(user);
 		if (!ObjectUtils.isEmpty(saveUser)) {
-			emailSend(saveUser);
+			emailSendForRegiser(saveUser);
 			return true;
 		}
 		return false;
 	}
 
-	private void emailSend(User saveUser) throws Exception {
+	private void emailSendForRegiser(User saveUser) throws Exception {
 		String message ="<html>"
 	            + "<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>"
 	            + "<div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>"
