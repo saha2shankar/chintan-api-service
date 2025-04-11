@@ -1,3 +1,0 @@
-2025-10-15 15:15:59.043 INFO  [http-nio-8080-exec-9] c.chintan.controller.HomeController - HomeService : verifyUserAccount: Exceutaion Start
-2025-10-15 15:15:59.048 INFO  [http-nio-8080-exec-9] c.c.serviceImpl.HomeServiceImpl - HomeServiceImpl : verifyAccount() : Start
-2025-10-15 15:15:59.084 INFO  [http-nio-8080-exec-9] c.c.serviceImpl.HomeServiceImpl - Message : Account verification Success !
