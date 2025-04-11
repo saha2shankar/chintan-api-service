@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.chintan.config.security.CustomUserDetails;
 import com.chintan.entity.User;
 import com.chintan.handler.GenericResponse;
-import com.chintan.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
