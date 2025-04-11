@@ -15,6 +15,9 @@ import com.chintan.dto.UserRequest;
 import com.chintan.service.AuthService;
 import com.chintan.util.CommonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -24,11 +27,18 @@ public class AuthController {
 	
 	@PostMapping("/register")
 	private ResponseEntity<?> registerUser( @RequestBody UserRequest userRequest) throws Exception{
+		log.info("AuthController : registerUser() : Exceution Start");
 		Boolean register = authService.register(userRequest);
-		if(register) {
-			return CommonUtil.createBuildResponseMessage("Register Successfully", HttpStatus.CREATED);
+		if(!register) {
+			
+			log.info("Error : {}","Register failed");
+			return CommonUtil.createErrorResponseMessage("Register Failed!", HttpStatus.INTERNAL_SERVER_ERROR);
+		
 		}
-		return CommonUtil.createErrorResponseMessage("Register Failed!", HttpStatus.INTERNAL_SERVER_ERROR);
+		log.info("AuthController : registerUser() : Exceution End");
+		return CommonUtil.createBuildResponseMessage("Register Successfully", HttpStatus.CREATED);
+
+	
 	}
 	
 	@PostMapping("/login")

@@ -10,6 +10,9 @@ import com.chintan.exception.SuccessException;
 import com.chintan.repository.UserRepository;
 import com.chintan.service.HomeService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class HomeServiceImpl implements HomeService{
 	
@@ -19,10 +22,11 @@ public class HomeServiceImpl implements HomeService{
 
 	@Override
 	public Boolean verifyAccount(Integer userId, String verificationCode) throws Exception {
-		
+		log.info("HomeServiceImpl : verifyAccount() : Start");
 		User user = userRepository.findById(userId).orElseThrow(()-> new ResourcesNotFoundException("Invalid user!"));
 		
 		if(user.getStatus().getVerificationCode()==null) {
+			log.info("Message : Account already verified!");
 			throw new SuccessException("Account already verified!");
 		}
 		if(user.getStatus().getVerificationCode().equals(verificationCode)) {
@@ -30,9 +34,11 @@ public class HomeServiceImpl implements HomeService{
 			status.setIsActive(true);
 			status.setVerificationCode(null);
 			userRepository.save(user);
+			log.info("Message : Account verification Success !");
 			return true;
 			
 		}
+		log.info("HomeServiceImpl : verifyAccount() : End");
 		return false;
 	}
 

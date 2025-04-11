@@ -1,5 +1,8 @@
 package com.chintan.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +18,12 @@ import com.chintan.service.HomeService;
 import com.chintan.service.UserService;
 import com.chintan.util.CommonUtil;
 
+
 @RestController
 @RequestMapping("/api/v1/home")
 public class HomeController {
+	
+	Logger log = LoggerFactory.getLogger(HomeController.class);
 	
 	 @Autowired
 	private HomeService homeService;
@@ -28,10 +34,12 @@ public class HomeController {
 
 	@GetMapping("/verify")
 	public ResponseEntity<?> verifyUserAccount(@RequestParam Integer id, @RequestParam String vc) throws Exception{
+		log.info("HomeService : verifyUserAccount: Exceutaion Start");
 		Boolean verifyAccount = homeService.verifyAccount(id, vc);
 		if(verifyAccount) {
 			return CommonUtil.createBuildResponseMessage("Account verification success", HttpStatus.OK);
 		}
+		log.info("HomeService : verifyUserAccount: Exceutaion end");
 		return CommonUtil.createErrorResponseMessage("Invalid Verification Link", HttpStatus.BAD_REQUEST);
 	}
 	

@@ -16,6 +16,9 @@ import com.chintan.entity.User;
 import com.chintan.service.UserService;
 import com.chintan.util.CommonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
