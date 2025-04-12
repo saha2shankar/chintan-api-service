@@ -31,7 +31,7 @@ spring:
   mail:
     host: smtp.gmail.com
     username: sahharishankar11@gmail.com
-    password: lium ednd hfim ejze
+    password: **** **** **** ****
     port: 587
     properties:
       mail:
@@ -39,6 +39,13 @@ spring:
           auth: true
           starttls:
             enable: true
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+    path: /chintan-doc
+  api-docs:
+    path: /chintan-api-doc
 
 file:
   upload:
