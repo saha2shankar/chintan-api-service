@@ -1,0 +1,9 @@
+2025-19-00 14 INFO  [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-19-00 14 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-19-00 14 INFO  [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2025-19-00 14 INFO  [http-nio-8080-exec-6] c.c.exception.GlobalExceptionHandler - GlobalExceptionHandler : handleBadCredentialsException() : Bad credentials
+2025-19-00 14 WARN  [http-nio-8080-exec-6] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-19-02 14 INFO  [http-nio-8080-exec-3] c.c.exception.GlobalExceptionHandler - GlobalExceptionHandler : handleBadCredentialsException() : Bad credentials
+2025-19-02 14 WARN  [http-nio-8080-exec-3] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-19-32 14 INFO  [http-nio-8080-exec-10] c.c.exception.GlobalExceptionHandler - GlobalExceptionHandler : handleBadCredentialsException() : Bad credentials
+2025-19-32 14 WARN  [http-nio-8080-exec-10] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]

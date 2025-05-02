@@ -24,6 +24,8 @@ public class UserRequest {
 	private String mobileNo;
 	private List<RoleDto> roles;
 	private String password;
+	private String address;
+	private String education;
 	
 	@Getter
 	@Setter

@@ -28,6 +28,7 @@ import com.chintan.service.JwtService;
 import com.chintan.service.AuthService;
 import com.chintan.util.Validation;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -62,8 +63,10 @@ public class AuthServiceImpl implements AuthService {
 	public Boolean register(UserRequest userRequest) throws Exception {
 		log.info("AuthServiceImpl : register() : Exceution Start");
 		validation.userValidation(userRequest);
+	
 
 		User user = mapper.map(userRequest, User.class);
+		
 		setRole(userRequest, user);
 		AccountStatus accountStatus = AccountStatus.builder()
 
@@ -103,12 +106,35 @@ public class AuthServiceImpl implements AuthService {
 				.title("Account Creating Confirmation").subject("Account Created Success").message(message).build();
 		emailService.sendEmail(emailRequest);
 	}
-
 	private void setRole(UserRequest userRequest, User user) {
-		List<Integer> reqRoleId = userRequest.getRoles().stream().map(r -> r.getId()).toList();
-		List<Role> roles = roleRepository.findAllById(reqRoleId);
-		user.setRoles(roles);
+	    List<Role> roles;
+	    
+	    // Check if roles are provided in the request
+	    if (userRequest.getRoles() == null || userRequest.getRoles().isEmpty()) {
+	        // If no roles provided, assign default role (ID 2)
+	        Role defaultRole = roleRepository.findById(2)
+	                .orElseThrow(() -> new EntityNotFoundException("Default role with ID 2 not found"));
+	        roles = List.of(defaultRole);
+	    } else {
+	        // Get requested role IDs from the user request
+		    List<Integer> reqRoleId = userRequest.getRoles().stream().map(r -> r.getId()).toList();
+
+	        
+	        // Fetch all roles that match the requested IDs
+	        roles = roleRepository.findAllById(reqRoleId);
+	        
+	        // If no matching roles found in DB, use default role
+	        if (roles.isEmpty()) {
+	            Role defaultRole = roleRepository.findById(2)
+	                    .orElseThrow(() -> new EntityNotFoundException("Default role with ID 2 not found"));
+	            roles = List.of(defaultRole);
+	        }
+	    }
+	    
+	    user.setRoles(roles);
 	}
+
+
 
 	@Override
 	public LoginResponse login(LoginRequest loginRequest) {

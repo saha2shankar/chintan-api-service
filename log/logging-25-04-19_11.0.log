@@ -1,0 +1,6 @@
+2025-19-11 11 INFO  [http-nio-8080-exec-8] c.c.exception.GlobalExceptionHandler - GlobalExceptionHandler : handleBadCredentialsException() : Bad credentials
+2025-19-11 11 WARN  [http-nio-8080-exec-8] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-19-44 11 INFO  [http-nio-8080-exec-1] c.c.exception.GlobalExceptionHandler - GlobalExceptionHandler : handleBadCredentialsException() : Bad credentials
+2025-19-44 11 WARN  [http-nio-8080-exec-1] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]
+2025-19-44 11 INFO  [http-nio-8080-exec-2] c.c.exception.GlobalExceptionHandler - GlobalExceptionHandler : handleBadCredentialsException() : Bad credentials
+2025-19-44 11 WARN  [http-nio-8080-exec-2] o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.BadCredentialsException: Bad credentials]

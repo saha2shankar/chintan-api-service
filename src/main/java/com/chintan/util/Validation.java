@@ -142,20 +142,20 @@ public class Validation {
 			throw new IllegalArgumentException("mobno is invalid");
 		}
 
-		if (CollectionUtils.isEmpty(userRequest.getRoles())) {
-			throw new IllegalArgumentException("role is invalid");
-		} else {
-
-			List<Integer> roleIds = roleRepository.findAll().stream().map(r -> r.getId()).toList();
-
-			List<Integer> invalidReqRoleids = userRequest.getRoles().stream().map(r -> r.getId())
-					.filter(roleId -> !roleIds.contains(roleId)).toList();
-
-			if (!CollectionUtils.isEmpty(invalidReqRoleids)) {
-				throw new IllegalArgumentException("role is invalid" + invalidReqRoleids);
-			}
-
-		}
+//		if (CollectionUtils.isEmpty(userRequest.getRoles())) {
+//			throw new IllegalArgumentException("role is invalid");
+//		} else {
+//
+//			List<Integer> roleIds = roleRepository.findAll().stream().map(r -> r.getId()).toList();
+//
+//			List<Integer> invalidReqRoleids = userRequest.getRoles().stream().map(r -> r.getId())
+//					.filter(roleId -> !roleIds.contains(roleId)).toList();
+//
+//			if (!CollectionUtils.isEmpty(invalidReqRoleids)) {
+//				throw new IllegalArgumentException("role is invalid" + invalidReqRoleids);
+//			}
+//
+//		}
 
 	}
 	

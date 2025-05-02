@@ -24,6 +24,8 @@ public class UserResponse {
 	private String mobileNo;
 	private List<RoleDto> roles;
 	private StatusDto  status;
+	private String address;
+	private String education;
 	
 	@Getter
 	@Setter
