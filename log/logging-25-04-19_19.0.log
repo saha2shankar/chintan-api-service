@@ -1,5 +1,0 @@
-2025-19-00 19 INFO  [http-nio-8080-exec-4] c.chintan.controller.AuthController - AuthController : registerUser() : Exceution Start
-2025-19-00 19 INFO  [http-nio-8080-exec-4] c.c.serviceImpl.AuthServiceImpl - AuthServiceImpl : register() : Exceution Start
-2025-19-00 19 INFO  [http-nio-8080-exec-4] c.c.serviceImpl.AuthServiceImpl - Message: email send success
-2025-19-00 19 INFO  [http-nio-8080-exec-4] c.c.serviceImpl.AuthServiceImpl - AuthServiceImpl : register() : Exceution End
-2025-19-00 19 INFO  [http-nio-8080-exec-4] c.chintan.controller.AuthController - AuthController : registerUser() : Exceution End
