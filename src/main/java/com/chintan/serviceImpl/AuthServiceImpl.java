@@ -61,7 +61,6 @@ public class AuthServiceImpl implements AuthService {
 
 	@Override
 	public Boolean register(UserRequest userRequest) throws Exception {
-		log.info("AuthServiceImpl : register() : Exceution Start");
 		validation.userValidation(userRequest);
 	
 
@@ -80,7 +79,6 @@ public class AuthServiceImpl implements AuthService {
 		}
 		emailSendForRegiser(saveUser);
 		log.info("Message: {}", "email send success");
-		log.info("AuthServiceImpl : register() : Exceution End");
 		return true;
 	}
 

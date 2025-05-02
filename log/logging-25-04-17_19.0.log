@@ -1,2 +1,0 @@
-2025-17-27 19 WARN  [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16h20s82ms591µs300ns).
-2025-17-52 19 INFO  [http-nio-8080-exec-5] o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 3930 ms

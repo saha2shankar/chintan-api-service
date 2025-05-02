@@ -22,7 +22,6 @@ public class HomeServiceImpl implements HomeService{
 
 	@Override
 	public Boolean verifyAccount(Integer userId, String verificationCode) throws Exception {
-		log.info("HomeServiceImpl : verifyAccount() : Start");
 		User user = userRepository.findById(userId).orElseThrow(()-> new ResourcesNotFoundException("Invalid user!"));
 		
 		if(user.getStatus().getVerificationCode()==null) {
@@ -38,7 +37,6 @@ public class HomeServiceImpl implements HomeService{
 			return true;
 			
 		}
-		log.info("HomeServiceImpl : verifyAccount() : End");
 		return false;
 	}
 
